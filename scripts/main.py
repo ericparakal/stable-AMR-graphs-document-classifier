@@ -2,24 +2,37 @@ import yaml
 from pathlib import Path
 from utils import get_project_root
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from graph_pattern_visualize import concepts_iterator, equivalence_classes_iterator, frequent_subgraphs_iterator, graph_iterator
 from graph_pattern_reconstruction import frequent_subgraphs_builder, concepts_builder, equivalence_classes_builder
 
 
 def do_operations(root, config, dataset='all', mode='all', weighting='yes', graph_pattern_reconstruction='yes'):
-    # print(config)
-    print(dataset)
-    print(mode)
-    print(weighting)
-    print(graph_pattern_reconstruction)
-    print(root)
 
     if graph_pattern_reconstruction == 'yes':
         print("Reconstructing graph patterns...")
+
+        '''
+        for class_name in config['example_classes']:
+            frequent_subgraphs_builder(class_name, str(root) + '/' + config['example_data_prefix'])
+            concepts_builder(class_name, str(root) + '/' + config['example_data_prefix'])
+            equivalence_classes_builder(class_name, str(root) + '/' + config['example_data_prefix'])
+
+            concepts_iterator(class_name, str(root) + '/' + config['example_data_prefix'])
+            equivalence_classes_iterator(class_name, str(root) + '/' + config['example_data_prefix'])
+            frequent_subgraphs_iterator(class_name, str(root) + '/' + config['example_data_prefix'])
+            graph_iterator(class_name, str(root) + '/' + config['example_data_prefix'], ['g_1', 'g_2', 'g_3'])
+
+        '''
 
         for class_name in config['ten_newsgroups_classes']:
             frequent_subgraphs_builder(class_name, str(root) + '/' + config['ten_newsgroups_data_prefix'])
             concepts_builder(class_name, str(root) + '/' + config['ten_newsgroups_data_prefix'])
             equivalence_classes_builder(class_name, str(root) + '/' + config['ten_newsgroups_data_prefix'])
+
+        for class_name in config['bbcsport_classes']:
+            frequent_subgraphs_builder(class_name, str(root) + '/' + config['bbcsport_data_prefix'])
+            concepts_builder(class_name, str(root) + '/' + config['bbcsport_data_prefix'])
+            equivalence_classes_builder(class_name, str(root) + '/' + config['bbcsport_data_prefix'])
 
 
 if __name__ == '__main__':
