@@ -2,37 +2,33 @@ import yaml
 from pathlib import Path
 from utils import get_project_root
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from graph_pattern_visualize import concepts_iterator, equivalence_classes_iterator, frequent_subgraphs_iterator, graph_iterator
-from graph_pattern_reconstruction import frequent_subgraphs_builder, concepts_builder, equivalence_classes_builder
+from graph_pattern_visualize import graph_pattern_visualize_iterator
+from graph_pattern_reconstruction import graph_pattern_reconstruction_iterator
+from graph_pattern_weighting import graph_pattern_iterator
+from graph_pattern_scoring import graph_pattern_classification
 
 
-def do_operations(root, config, dataset='all', mode='all', weighting='yes', graph_pattern_reconstruction='yes'):
+def do_operations(root, config, dataset='all', mode='concepts', weighting='yes', graph_pattern_reconstruction='yes'):
 
     if graph_pattern_reconstruction == 'yes':
         print("Reconstructing graph patterns...")
+        graph_pattern_reconstruction_iterator(config['ten_newsgroups_classes'], str(root) + '/' + config['ten_newsgroups_data_prefix'], mode)
+        # graph_pattern_reconstruction_iterator(config['example_classes'], str(root) + '/' + config['example_data_prefix'], mode)
+        # graph_pattern_visualize_iterator(config['example_classes'], str(root) + '/' + config['example_data_prefix'], mode)
 
-        '''
-        for class_name in config['example_classes']:
-            frequent_subgraphs_builder(class_name, str(root) + '/' + config['example_data_prefix'])
-            concepts_builder(class_name, str(root) + '/' + config['example_data_prefix'])
-            equivalence_classes_builder(class_name, str(root) + '/' + config['example_data_prefix'])
+        # print("ten newsgroups graph patterns reconstructed.")
 
-            concepts_iterator(class_name, str(root) + '/' + config['example_data_prefix'])
-            equivalence_classes_iterator(class_name, str(root) + '/' + config['example_data_prefix'])
-            frequent_subgraphs_iterator(class_name, str(root) + '/' + config['example_data_prefix'])
-            graph_iterator(class_name, str(root) + '/' + config['example_data_prefix'], ['g_1', 'g_2', 'g_3'])
+    if weighting == 'yes':
+        print("Weighting graph patterns...")
+        graph_pattern_iterator(config['ten_newsgroups_classes'], str(root) + '/' + config['ten_newsgroups_data_prefix'], 'frequent_subgraphs')
+        # graph_pattern_iterator(config['ten_newsgroups_classes'], str(root) + '/' + config['ten_newsgroups_data_prefix'], 'concepts')
+        # graph_pattern_iterator(config['ten_newsgroups_classes'], str(root) + '/' + config['ten_newsgroups_data_prefix'], 'concepts')
+        # graph_pattern_iterator(config['ten_newsgroups_classes'], str(root) + '/' + config['ten_newsgroups_data_prefix'], 'equivalence_classes')
+        # graph_pattern_iterator(config['bbcsport_classes'], str(root) + '/' + config['bbcsport_data_prefix'], 'concepts')
 
-        '''
-
-        for class_name in config['ten_newsgroups_classes']:
-            frequent_subgraphs_builder(class_name, str(root) + '/' + config['ten_newsgroups_data_prefix'])
-            concepts_builder(class_name, str(root) + '/' + config['ten_newsgroups_data_prefix'])
-            equivalence_classes_builder(class_name, str(root) + '/' + config['ten_newsgroups_data_prefix'])
-
-        for class_name in config['bbcsport_classes']:
-            frequent_subgraphs_builder(class_name, str(root) + '/' + config['bbcsport_data_prefix'])
-            concepts_builder(class_name, str(root) + '/' + config['bbcsport_data_prefix'])
-            equivalence_classes_builder(class_name, str(root) + '/' + config['bbcsport_data_prefix'])
+    # graph_pattern_classification(config['bbcsport_classes'], str(root) + '/' + config['bbcsport_data_prefix'], 'concepts')
+    # graph_pattern_classification(config['ten_newsgroups_classes'], str(root) + '/' + config['ten_newsgroups_data_prefix'], 'concepts')
+    graph_pattern_classification(config['ten_newsgroups_classes'], str(root) + '/' + config['ten_newsgroups_data_prefix'], mode)
 
 
 if __name__ == '__main__':
@@ -46,7 +42,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, default='all', choices=['all', 'ten_newsgroups', 'bbcsport'],
                         help='Choose the dataset.')
 
-    parser.add_argument('--mode', type=str, default='all',
+    parser.add_argument('--mode', type=str, default='frequent_subgraphs',
                         choices=['all', 'concepts', 'frequent_subgraphs', 'equivalence_classes'],
                         help='Choose the operation mode.')
 
@@ -54,7 +50,7 @@ if __name__ == '__main__':
                         choices=['yes', 'no'],
                         help='Choose whether to weight graph patterns.')
 
-    parser.add_argument('--graph_pattern_reconstruction', type=str, default='yes',
+    parser.add_argument('--graph_pattern_reconstruction', type=str, default='no',
                         choices=['yes', 'no'],
                         help='Choose whether to reconstruct graph patterns.')
 
