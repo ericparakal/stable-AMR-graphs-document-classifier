@@ -1,3 +1,4 @@
+import os
 import json
 import copy
 import pickle
@@ -10,13 +11,10 @@ from itertools import groupby
 def frequent_subgraphs_builder(class_name, prefix):
     frequent_subgraphs = []
     frequent_subgraph_ele = {}
-
     vertex_positions = {}
 
-    graph_patterns_file_name = prefix + '/' + class_name + '/' + class_name + '_patterns.OUT'
-
+    frequent_subgraphs_file_name = prefix + '/' + class_name + '/' + class_name + '_patterns.OUT'
     vertex_labels_file_name = prefix + '/' + class_name + '/' + class_name + '_vertex_labels.pickle'
-
     edge_labels_file_name = prefix + '/' + class_name + '/' + class_name + '_edge_labels.pickle'
 
     with open(vertex_labels_file_name, 'rb') as f:
@@ -29,12 +27,12 @@ def frequent_subgraphs_builder(class_name, prefix):
 
     edge_labels = {e: k for k, e in edge_labels_fake.items()}
 
-    with open(graph_patterns_file_name) as f:
+    with open(frequent_subgraphs_file_name) as f:
         lines = f.read().splitlines()
 
     g = nx.MultiDiGraph()
 
-    frequent_subgraph_counter = 0
+    frequent_subgraph_id_counter = 0
 
     for line in lines:
         words = line.split(" ")
@@ -52,7 +50,7 @@ def frequent_subgraphs_builder(class_name, prefix):
         if words[0] == "x":
             frequent_subgraph_ele['subgraphs'] = [copy.deepcopy(g)]
             frequent_subgraph_ele['extent'] = words[1:]
-            frequent_subgraph_ele['id'] = class_name + '_frequent_subgraph_' + str(frequent_subgraph_counter)
+            frequent_subgraph_ele['id'] = class_name + '_frequent_subgraph_' + str(frequent_subgraph_id_counter)
 
             frequent_subgraphs.append(copy.deepcopy(frequent_subgraph_ele))
 
@@ -60,7 +58,7 @@ def frequent_subgraphs_builder(class_name, prefix):
             frequent_subgraph_ele = {}
             vertex_positions = {}
 
-            frequent_subgraph_counter += 1
+            frequent_subgraph_id_counter += 1
 
     frequent_subgraphs_file_name = class_name + '_frequent_subgraphs.pickle'
 
@@ -68,7 +66,6 @@ def frequent_subgraphs_builder(class_name, prefix):
         pickle.dump(frequent_subgraphs, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     frequent_subgraphs_path = prefix + '/' + class_name + '/' + frequent_subgraphs_file_name
-
     shutil.move(frequent_subgraphs_file_name, frequent_subgraphs_path)
 
 
@@ -83,10 +80,10 @@ def find_maximal_subgraph_index(indices, frequent_subgraphs):
             maximal_subgraph_index = i
 
         elif len(frequent_subgraphs[i]['subgraphs'][0].nodes) == maximal_subgraph_node_count:
-            subsumption = bf.subsumption_check(frequent_subgraphs[maximal_subgraph_index]['subgraphs'][0],
-                                               frequent_subgraphs[i]['subgraphs'][0])
+            singular_subsumption = bf.singular_subsumption_check(frequent_subgraphs[maximal_subgraph_index]['subgraphs'][0],
+                                                                 frequent_subgraphs[i]['subgraphs'][0])
 
-            if subsumption == 0 and len(frequent_subgraphs[i]['subgraphs'][0].edges) > maximal_subgraph_edge_count:
+            if singular_subsumption == 0 and len(frequent_subgraphs[i]['subgraphs'][0].edges) > maximal_subgraph_edge_count:
                 maximal_subgraph_node_count = len(frequent_subgraphs[i]['subgraphs'][0].nodes)
                 maximal_subgraph_edge_count = len(frequent_subgraphs[i]['subgraphs'][0].edges)
                 maximal_subgraph_index = i
@@ -106,10 +103,10 @@ def filter_frequent_subgraphs(indices, frequent_subgraphs):
         bad_indices = []
 
         for i in indices:
-            subsumption = bf.subsumption_check(frequent_subgraphs[maximal_subgraph_index]['subgraphs'][0],
-                                               frequent_subgraphs[i]['subgraphs'][0])
+            singular_subsumption = bf.singular_subsumption_check(frequent_subgraphs[maximal_subgraph_index]['subgraphs'][0],
+                                                                 frequent_subgraphs[i]['subgraphs'][0])
 
-            if subsumption == 1:
+            if singular_subsumption == 1:
                 bad_indices.append(i)
 
         indices = [index for index in indices if index not in bad_indices]
@@ -145,6 +142,7 @@ def concepts_builder(class_name, prefix):
             concept_ele['subgraphs'].append(copy.deepcopy(frequent_subgraphs[m]['subgraphs'][0]))
             concept_ele['supports'].append(copy.deepcopy(frequent_subgraphs[m]['supports'][0]))
 
+        concept_ele['extent'] = ext['Ext']['Inds']
         concept_ele['id'] = class_name + '_concept_' + str(ext_index)
         concepts.append(copy.deepcopy(concept_ele))
         concept_ele = {}
@@ -195,3 +193,28 @@ def equivalence_classes_builder(class_name, prefix):
     equivalence_classes_path = prefix + '/' + class_name + '/' + equivalence_classes_file_name
 
     shutil.move(equivalence_classes_file_name, equivalence_classes_path)
+
+
+def graph_pattern_reconstruction_iterator(classes, prefix, mode):
+
+    for class_name in classes:
+
+        if mode == 'frequent_subgraphs':
+            frequent_subgraphs_builder(class_name, prefix)
+
+        elif mode == 'concepts':
+            if not os.path.isfile(prefix + '/' + class_name + '/' + class_name + '_frequent_subgraphs.pickle'):
+                print(f"Frequent subgraphs not present for {class_name} class, constructing now...")
+                frequent_subgraphs_builder(class_name, prefix)
+            concepts_builder(class_name, prefix)
+
+        elif mode == 'equivalence_classes':
+            if not os.path.isfile(prefix + '/' + class_name + '/' + class_name + '_frequent_subgraphs.pickle'):
+                print(f"Frequent subgraphs not present for {class_name} class, constructing now...")
+                frequent_subgraphs_builder(class_name, prefix)
+            equivalence_classes_builder(class_name, prefix)
+
+        elif mode == 'all':
+            frequent_subgraphs_builder(class_name, prefix)
+            concepts_builder(class_name, prefix)
+            equivalence_classes_builder(class_name, prefix)
