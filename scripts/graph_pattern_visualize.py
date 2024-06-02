@@ -69,4 +69,22 @@ def graph_iterator(class_name, prefix, graph_indices):
 
         graph_path = prefix + '/' + class_name + '/' + 'visualizations' + '/' + graph_index + '.png'
         shutil.move(new_graph_name, graph_path)
-        
+
+
+def graph_pattern_visualize_iterator(classes, prefix, mode):
+
+    for class_name in classes:
+
+        if mode == 'frequent_subgraphs':
+            frequent_subgraphs_iterator(class_name, prefix)
+
+        elif mode == 'concepts':
+            concepts_iterator(class_name, prefix)
+
+        elif mode == 'equivalence_classes':
+            equivalence_classes_iterator(class_name, prefix)
+
+        elif mode == 'all':
+            frequent_subgraphs_iterator(class_name, prefix)
+            concepts_iterator(class_name, prefix)
+            equivalence_classes_iterator(class_name, prefix)
