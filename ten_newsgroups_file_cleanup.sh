@@ -67,3 +67,8 @@ rm -f data/ten_newsgroups_graphs/technologie/technologie_frequent_subgraphs.pick
 rm -f data/ten_newsgroups_graphs/technologie/technologie_weighted_frequent_subgraphs.pickle
 rm -f data/ten_newsgroups_graphs/technologie/technologie_equivalence_classes.pickle
 rm -f data/ten_newsgroups_graphs/technologie/technologie_weighted_equivalence_classes.pickle
+
+
+rm -f data/ten_newsgroups_graphs/ten_newsgroups_concepts_edge_penalties.pickle
+rm -f data/ten_newsgroups_graphs/ten_newsgroups_frequent_subgraphs_edge_penalties.pickle
+rm -f data/ten_newsgroups_graphs/ten_newsgroups_equivalence_classes_edge_penalties.pickle

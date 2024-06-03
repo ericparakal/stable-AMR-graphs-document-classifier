@@ -32,3 +32,7 @@ rm -f data/bbcsport_graphs/tennis/tennis_frequent_subgraphs.pickle
 rm -f data/bbcsport_graphs/tennis/tennis_weighted_frequent_subgraphs.pickle
 rm -f data/bbcsport_graphs/tennis/tennis_equivalence_classes.pickle
 rm -f data/bbcsport_graphs/tennis/tennis_weighted_equivalence_classes.pickle
+
+rm -f data/bbcsport_graphs/bbcsport_concepts_edge_penalties.pickle
+rm -f data/bbcsport_graphs/bbcsport_frequent_subgraphs_edge_penalties.pickle
+rm -f data/bbcsport_graphs/bbcsport_equivalence_classes_edge_penalties.pickle

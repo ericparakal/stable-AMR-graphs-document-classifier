@@ -203,15 +203,9 @@ def graph_pattern_reconstruction_iterator(classes, prefix, mode):
             frequent_subgraphs_builder(class_name, prefix)
 
         elif mode == 'concepts':
-            if not os.path.isfile(prefix + '/' + class_name + '/' + class_name + '_frequent_subgraphs.pickle'):
-                print(f"Frequent subgraphs not present for {class_name} class, constructing now...")
-                frequent_subgraphs_builder(class_name, prefix)
             concepts_builder(class_name, prefix)
 
         elif mode == 'equivalence_classes':
-            if not os.path.isfile(prefix + '/' + class_name + '/' + class_name + '_frequent_subgraphs.pickle'):
-                print(f"Frequent subgraphs not present for {class_name} class, constructing now...")
-                frequent_subgraphs_builder(class_name, prefix)
             equivalence_classes_builder(class_name, prefix)
 
         elif mode == 'all':

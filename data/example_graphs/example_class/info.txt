@@ -1,0 +1,57 @@
+Reconstructing graph patterns...
+
+Frequent subgraph example_class_frequent_subgraph_0 has support 2
+Frequent subgraph example_class_frequent_subgraph_1 has support 2
+Frequent subgraph example_class_frequent_subgraph_2 has support 2
+Frequent subgraph example_class_frequent_subgraph_3 has support 3
+Frequent subgraph example_class_frequent_subgraph_4 has support 2
+Frequent subgraph example_class_frequent_subgraph_5 has support 2
+Frequent subgraph example_class_frequent_subgraph_6 has support 2
+Frequent subgraph example_class_frequent_subgraph_7 has support 3
+Frequent subgraph example_class_frequent_subgraph_8 has support 2
+Frequent subgraph example_class_frequent_subgraph_9 has support 2
+Frequent subgraph example_class_frequent_subgraph_10 has support 2
+Frequent subgraph example_class_frequent_subgraph_11 has support 2
+
+Concept example_class_concept_0
+Subgraph example_class_concept_0_subgraph_0 support:3
+Subgraph example_class_concept_0_subgraph_1 support:3
+Concept example_class_concept_1
+Subgraph example_class_concept_1_subgraph_0 support:2
+Subgraph example_class_concept_1_subgraph_1 support:3
+Concept example_class_concept_2
+Subgraph example_class_concept_2_subgraph_0 support:2
+Subgraph example_class_concept_2_subgraph_1 support:3
+Concept example_class_concept_3
+Subgraph example_class_concept_3_subgraph_0 support:2
+Subgraph example_class_concept_3_subgraph_1 support:2
+Subgraph example_class_concept_3_subgraph_2 support:3
+Concept example_class_concept_4
+Subgraph example_class_concept_4_subgraph_0 support:2
+Subgraph example_class_concept_4_subgraph_1 support:3
+Concept example_class_concept_5
+Subgraph example_class_concept_5_subgraph_0 support:2
+Subgraph example_class_concept_5_subgraph_1 support:2
+Concept example_class_concept_6
+Subgraph example_class_concept_6_subgraph_0 support:2
+Subgraph example_class_concept_6_subgraph_1 support:2
+
+Equivalence class example_class_equivalence_class_0 with extent:['0', '1']
+Subgraph example_class_equivalence_class_0_subgraph_0 support:2
+Subgraph example_class_equivalence_class_0_subgraph_1 support:2
+
+Equivalence class example_class_equivalence_class_1 with extent:['0', '1', '2']
+Subgraph example_class_equivalence_class_1_subgraph_0 support:3
+Subgraph example_class_equivalence_class_1_subgraph_1 support:3
+
+Equivalence class example_class_equivalence_class_2 with extent:['0', '2']
+Subgraph example_class_equivalence_class_2_subgraph_0 support:2
+Subgraph example_class_equivalence_class_2_subgraph_1 support:2
+
+Equivalence class example_class_equivalence_class_3 with extent:['1', '2']
+Subgraph example_class_equivalence_class_3_subgraph_0 support:2
+Subgraph example_class_equivalence_class_3_subgraph_1 support:2
+Subgraph example_class_equivalence_class_3_subgraph_2 support:2
+Subgraph example_class_equivalence_class_3_subgraph_3 support:2
+Subgraph example_class_equivalence_class_3_subgraph_4 support:2
+Subgraph example_class_equivalence_class_3_subgraph_5 support:2

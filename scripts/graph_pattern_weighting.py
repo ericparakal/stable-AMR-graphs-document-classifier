@@ -26,9 +26,10 @@ def penalty_calculation(graph_pattern, graphs):
     return graph_pattern_penalty_1, graph_pattern_penalty_2, graph_pattern_penalty_3, graph_pattern_penalty_5, graph_pattern_penalty_6
 
 
-def graph_pattern_iterator(classes, prefix, mode):
+def graph_pattern_weight_calculation(dataset, classes, prefix, mode):
 
     weighted_graph_patterns = []
+    edge_penalties = {}
 
     for class_name in classes:
         graph_data_prefix = prefix + '/' + class_name
@@ -67,6 +68,15 @@ def graph_pattern_iterator(classes, prefix, mode):
                         print("More than 1 relevant concept.")
                         return
 
+                for subgraph in gp_ele['subgraphs']:
+                    for node1, node2, data in subgraph.edges(data=True):
+
+                        if (node1, node2, data['label']) in edge_penalties:
+                            edge_penalties[(node1, node2, data['label'])] += gp_ele_penalty_5
+
+                        else:
+                            edge_penalties[(node1, node2, data['label'])] = 1
+
             print(f"{mode} {negative_class_name} for training document graphs of class {class_name} finished.")
         print(f"Class {class_name} training document graphs finished.")
 
@@ -85,3 +95,23 @@ def graph_pattern_iterator(classes, prefix, mode):
         class_weighted_graph_patterns_path = prefix + '/' + class_name + '/' + class_weighted_graph_patterns_file_name
 
         shutil.move(class_weighted_graph_patterns_file_name, class_weighted_graph_patterns_path)
+
+    edge_penalties_file_name = dataset + '_' + mode + '_edge_penalties.pickle'
+
+    with open(edge_penalties_file_name, 'wb') as handle:
+        pickle.dump(edge_penalties, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    edge_penalties_path = prefix + '/' + edge_penalties_file_name
+
+    shutil.move(edge_penalties_file_name, edge_penalties_path)
+
+
+def graph_pattern_weighting_iterator(dataset, classes, prefix, mode):
+
+    if mode == 'all':
+        graph_pattern_weight_calculation(dataset, classes, prefix, 'frequent_subgraphs')
+        graph_pattern_weight_calculation(dataset, classes, prefix, 'concepts')
+        graph_pattern_weight_calculation(dataset, classes, prefix, 'equivalence_classes')
+
+    else:
+        graph_pattern_weight_calculation(dataset, classes, prefix, mode)
