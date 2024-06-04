@@ -23,7 +23,7 @@ def do_operations(root, config, dataset='all', mode='concepts', weighting='yes',
             graph_pattern_weighting_iterator('ten_newsgroups', config['ten_newsgroups_classes'], str(root) + '/' + config['ten_newsgroups_data_prefix'], mode)
             graph_pattern_weighting_iterator('bbcsport', config['bbcsport_classes'], str(root) + '/' + config['bbcsport_data_prefix'], mode)
 
-        '''
+
         ten_newsgroups_results = graph_pattern_scoring_iterator('ten_newsgroups', config['ten_newsgroups_classes'], str(root) + '/' + config['ten_newsgroups_data_prefix'], mode)
         bbcsport_results = graph_pattern_scoring_iterator('bbcsport', config['bbcsport_classes'], str(root) + '/' + config['bbcsport_data_prefix'], mode)
 
@@ -41,7 +41,6 @@ def do_operations(root, config, dataset='all', mode='concepts', weighting='yes',
 
         bbcsport_results_path = str(root) + '/' + config['bbcsport_data_prefix'] + '/' + bbcsport_results_file_name
         shutil.move(bbcsport_results_file_name, bbcsport_results_path)
-        '''
 
         construct_results_dataframe(str(root), config)
 

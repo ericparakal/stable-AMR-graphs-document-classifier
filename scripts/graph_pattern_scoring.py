@@ -49,10 +49,20 @@ def graph_pattern_scoring(weighted_class_graph_patterns, edge_penalties, classes
 
                     if penalty == 'edge_penalty':
                         weighted_class_graph_pattern_edge_penalty = edge_penalty_calculation(weighted_class_graph_pattern['subgraphs'], edge_penalties)
-                        score += (weighted_class_graph_pattern_weight/weighted_class_graph_pattern_edge_penalty)
+
+                        if weighted_class_graph_pattern_edge_penalty == 0:
+                            score += (weighted_class_graph_pattern_weight / 1)
+
+                        else:
+                            score += (weighted_class_graph_pattern_weight / weighted_class_graph_pattern_edge_penalty)
 
                     else:
-                        score += (weighted_class_graph_pattern_weight/weighted_class_graph_pattern[f'{penalty}'])
+
+                        if weighted_class_graph_pattern[f'{penalty}'] == 0:
+                            score += (weighted_class_graph_pattern_weight / 1)
+
+                        else:
+                            score += (weighted_class_graph_pattern_weight / weighted_class_graph_pattern[f'{penalty}'])
 
             column.append(score / weighted_class_graph_pattern_counter)
     return column

@@ -7,11 +7,11 @@ import base_functions as bf
 
 
 def penalty_calculation(graph_pattern, graphs):
-    graph_pattern_penalty_1 = 1
-    graph_pattern_penalty_2 = 1
-    graph_pattern_penalty_3 = 1
-    graph_pattern_penalty_5 = 1
-    graph_pattern_penalty_6 = 1
+    graph_pattern_penalty_1 = 0
+    graph_pattern_penalty_2 = 0
+    graph_pattern_penalty_3 = 0
+    graph_pattern_penalty_5 = 0
+    graph_pattern_penalty_6 = 0
 
     for graph in graphs:
         multiple_subsumption = bf.multiple_subsumption_check(graph, graph_pattern['subgraphs'])
@@ -75,7 +75,7 @@ def graph_pattern_weight_calculation(dataset, classes, prefix, mode):
                             edge_penalties[(node1, node2, data['label'])] += gp_ele_penalty_5
 
                         else:
-                            edge_penalties[(node1, node2, data['label'])] = 1
+                            edge_penalties[(node1, node2, data['label'])] = 0
 
             print(f"{mode} {negative_class_name} for training document graphs of class {class_name} finished.")
         print(f"Class {class_name} training document graphs finished.")
