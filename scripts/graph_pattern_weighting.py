@@ -35,7 +35,7 @@ def graph_pattern_weight_calculation(dataset, classes, prefix, mode):
         graph_data_prefix = prefix + '/' + class_name
         graph_file_names = [os.path.join(graph_data_prefix, graph_file_name) for graph_file_name in os.listdir(graph_data_prefix) if '_train_' in graph_file_name and graph_file_name.endswith('.gml')]
 
-        graphs = [nx.read_gml(graph_file_name) for graph_file_name in graph_file_names]
+        graphs = [nx.read_gml(graph_file_name_temp) for graph_file_name_temp in graph_file_names]
 
         negative_classes = [negative_class_name_temp for negative_class_name_temp in classes if negative_class_name_temp != class_name]
 
@@ -45,17 +45,17 @@ def graph_pattern_weight_calculation(dataset, classes, prefix, mode):
             with open(graph_patterns_file_name, 'rb') as f:
                 graph_patterns = pickle.load(f)
 
-            for gp_i, gp_ele in enumerate(graph_patterns):
+            for gp_ele in graph_patterns:
                 gp_ele_penalty_1, gp_ele_penalty_2, gp_ele_penalty_3, gp_ele_penalty_5, gp_ele_penalty_6 = penalty_calculation(gp_ele, graphs)
 
-                relevant_index = [gp_j for gp_j, gp_ele_temp in enumerate(weighted_graph_patterns) if gp_ele_temp['id'] == gp_ele['id']]
+                relevant_index = [gp_i for gp_i, gp_ele_temp in enumerate(weighted_graph_patterns) if gp_ele_temp['id'] == gp_ele['id']]
 
                 if not relevant_index:
                     weighted_graph_pattern_ele = {'id': gp_ele['id'], 'supports': gp_ele['supports'], 'subgraphs': gp_ele['subgraphs'], 'extent': gp_ele['extent'],
                                                   'baseline_penalty': 1, 'penalty_1': copy.deepcopy(gp_ele_penalty_1),
                                                   'penalty_2': copy.deepcopy(gp_ele_penalty_2), 'penalty_3': copy.deepcopy(gp_ele_penalty_3),
                                                   'penalty_5': copy.deepcopy(len(gp_ele['extent'])), 'penalty_6': copy.deepcopy(gp_ele_penalty_6)}
-                    weighted_graph_patterns.append(weighted_graph_pattern_ele)
+                    weighted_graph_patterns.append(copy.deepcopy(weighted_graph_pattern_ele))
 
                 else:
                     if len(relevant_index) == 1:
@@ -81,11 +81,11 @@ def graph_pattern_weight_calculation(dataset, classes, prefix, mode):
         print(f"Class {class_name} training document graphs finished.")
 
     for class_name in classes:
-        relevant_indices = [gp_j for gp_j, gp_ele_temp in enumerate(weighted_graph_patterns) if class_name in gp_ele_temp['id']]
+        relevant_indices = [gp_i for gp_i, gp_ele_temp in enumerate(weighted_graph_patterns) if class_name in gp_ele_temp['id']]
         class_weighted_graph_patterns = []
 
         for r_i in relevant_indices:
-            class_weighted_graph_patterns.append(weighted_graph_patterns[r_i])
+            class_weighted_graph_patterns.append(copy.deepcopy(weighted_graph_patterns[r_i]))
 
         class_weighted_graph_patterns_file_name = class_name + '_weighted_' + mode + '.pickle'
 
@@ -109,9 +109,9 @@ def graph_pattern_weight_calculation(dataset, classes, prefix, mode):
 def graph_pattern_weighting_iterator(dataset, classes, prefix, mode):
 
     if mode == 'all':
-        graph_pattern_weight_calculation(dataset, classes, prefix, 'frequent_subgraphs')
         graph_pattern_weight_calculation(dataset, classes, prefix, 'concepts')
         graph_pattern_weight_calculation(dataset, classes, prefix, 'equivalence_classes')
+        graph_pattern_weight_calculation(dataset, classes, prefix, 'frequent_subgraphs')
 
     else:
         graph_pattern_weight_calculation(dataset, classes, prefix, mode)

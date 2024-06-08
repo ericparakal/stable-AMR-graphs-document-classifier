@@ -88,3 +88,4 @@ def graph_pattern_visualize_iterator(classes, prefix, mode):
             frequent_subgraphs_iterator(class_name, prefix)
             concepts_iterator(class_name, prefix)
             equivalence_classes_iterator(class_name, prefix)
+            graph_iterator(class_name, prefix, ['g_1', 'g_2', 'g_3'])

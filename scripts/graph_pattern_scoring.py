@@ -1,7 +1,7 @@
 import os
 import re
+import copy
 import pickle
-import shutil
 import pandas as pd
 import networkx as nx
 import base_functions as bf
@@ -11,7 +11,7 @@ from sklearn.metrics import classification_report
 
 
 def edge_penalty_calculation(subgraphs, edge_penalties):
-    edge_penalty = 1
+    edge_penalty = 0
 
     for subgraph in subgraphs:
         for node1, node2, data in subgraph.edges(data=True):
@@ -33,7 +33,7 @@ def graph_pattern_scoring(weighted_class_graph_patterns, edge_penalties, classes
         graph_file_names = [os.path.join(graph_data_prefix, graph_file_name) for graph_file_name in os.listdir(graph_data_prefix) if '_test_' in graph_file_name and graph_file_name.endswith('.gml')]
         graph_file_names.sort()
 
-        graphs = [nx.read_gml(graph_file_name) for graph_file_name in graph_file_names]
+        graphs = [nx.read_gml(graph_file_name_temp) for graph_file_name_temp in graph_file_names]
 
         for graph in graphs:
             score = 0
@@ -64,7 +64,7 @@ def graph_pattern_scoring(weighted_class_graph_patterns, edge_penalties, classes
                         else:
                             score += (weighted_class_graph_pattern_weight / weighted_class_graph_pattern[f'{penalty}'])
 
-            column.append(score / weighted_class_graph_pattern_counter)
+            column.append(copy.deepcopy(score / weighted_class_graph_pattern_counter))
     return column
 
 
@@ -82,6 +82,7 @@ def graph_pattern_classification(dataset, classes, prefix, mode):
     for penalty in penalties:
 
         d = {}
+        y_true = []
         index_list = []
 
         for class_name in classes:
@@ -99,26 +100,20 @@ def graph_pattern_classification(dataset, classes, prefix, mode):
             graph_file_names = [os.path.join(graph_data_prefix, graph_file_name) for graph_file_name in os.listdir(graph_data_prefix) if '_test_' in graph_file_name and graph_file_name.endswith('.gml')]
             graph_file_names.sort()
 
-            index_list.append([re.search(string_pattern, graph_file_name).group() for graph_file_name in graph_file_names])
+            index_list.append([re.search(string_pattern, graph_file_name_temp).group() for graph_file_name_temp in graph_file_names])
+
+            for j in range(len(graph_file_names)):
+                y_true.append(copy.deepcopy(class_name))
 
         index_list_2 = flatten_chain(index_list)
 
         classification_df = pd.DataFrame(data=d, index=index_list_2)
 
-        maxValueIndex = classification_df.idxmax(axis=1)
+        max_value_index = classification_df.idxmax(axis="columns")
 
-        y_true = []
-        y_pred = list(maxValueIndex.values)
+        y_pred = max_value_index.to_list()
 
-        for class_name in classes:
-            graph_data_prefix = prefix + '/' + class_name
-            graph_file_names = [os.path.join(graph_data_prefix, graph_file_name) for graph_file_name in os.listdir(graph_data_prefix) if '_test_' in graph_file_name and graph_file_name.endswith('.gml')]
-            graph_file_names.sort()
-
-            for j in range(len(graph_file_names)):
-                y_true.append(class_name)
-
-        cr = classification_report(y_true, y_pred, target_names=classes, output_dict=True)
+        cr = classification_report(y_true=y_true, y_pred=y_pred, target_names=classes, output_dict=True)
         results[f'{penalty}_macro-averaged_f1-score'] = cr['macro avg']['f1-score']
 
     return results
@@ -127,10 +122,6 @@ def graph_pattern_classification(dataset, classes, prefix, mode):
 def graph_pattern_scoring_iterator(dataset, classes, prefix, mode):
 
     if mode == 'all':
-        frequent_subgraphs_results = graph_pattern_classification(dataset, classes, prefix, 'frequent_subgraphs')
-        print(f"Scoring for {dataset} for frequent subgraphs done.")
-        print(frequent_subgraphs_results)
-
         concepts_results = graph_pattern_classification(dataset, classes, prefix, 'concepts')
         print(f"Scoring for {dataset} for concepts done.")
         print(concepts_results)
@@ -139,7 +130,11 @@ def graph_pattern_scoring_iterator(dataset, classes, prefix, mode):
         print(f"Scoring for {dataset} for equivalence classes done.")
         print(equivalence_classes_results)
 
-        results = [frequent_subgraphs_results, concepts_results, equivalence_classes_results]
+        frequent_subgraphs_results = graph_pattern_classification(dataset, classes, prefix, 'frequent_subgraphs')
+        print(f"Scoring for {dataset} for frequent subgraphs done.")
+        print(frequent_subgraphs_results)
+
+        results = [concepts_results, equivalence_classes_results, frequent_subgraphs_results]
 
     else:
         results = graph_pattern_classification(dataset, classes, prefix, mode)
